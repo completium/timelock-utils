@@ -7,14 +7,13 @@
 (maintainers "Completium team <contact@completium.com>")
 (authors "Completium team <contact@completium.com>")
 (homepage "https://completium.com")
-(bug_reports "https://github.com/edukera/archetype-lang/issues")
+(bug_reports "https://github.com/completium/timelock-utils/issues")
 
 (package
  (name timelock-utils)
  (synopsis "Timelock")
  (description "\
-Archetype is a general purpose language to develop smart contracts
-on the Tezos blockchain, with a specific focus on contract security
+Utils to generate chest and chest_key from packed data bytes
 ")
  (depends
    (ocaml (>= 4.12.0))
