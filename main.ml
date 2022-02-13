@@ -35,8 +35,8 @@ let force bchest time =
   let chest_key = Timelock.create_chest_key ~time chest in
   match Timelock.open_chest chest chest_key ~time with
   | Timelock.Correct v     -> print_bytes v
-  | Timelock.Bogus_cipher  -> print_endline "Could not force chest : bogus cipher."
-  | Timelock.Bogus_opening -> print_endline "Could not force chest : bogus opening."
+  | Timelock.Bogus_cipher  -> print_endline "Error: Could not force chest : bogus cipher."
+  | Timelock.Bogus_opening -> print_endline "Error: Could not force chest : bogus opening."
 
 
 let lock_arg = ref false
@@ -51,34 +51,20 @@ let anon a =
   anon_args := a::!anon_args
 
 let speclist = Arg.align [
-    "--lock",  Arg.Set lock_arg, "Generates chest and chest_key values";
-    "--force", Arg.Set force_arg, "Forces chest";
-    "--data",  Arg.Set_string data_arg, "Set data";
-    "--chest", Arg.Set_string chest_arg, "Set chest";
-    "--time",  Arg.Set_int time_arg, "Number of iterations"
+    "--lock",  Arg.Set lock_arg, " Generates chest and chest_key values";
+    "--force", Arg.Set force_arg, " Forces chest";
+    "--data",  Arg.Set_string data_arg, " Set data";
+    "--chest", Arg.Set_string chest_arg, " Set chest";
+    "--time",  Arg.Set_int time_arg, " Number of iterations"
   ]
 
-let usage_msg = "timelock-utils [lock <value> | force <chest>] -time <time>"
-
-(* let usage_msg =
- "timelock-utils\
-   command
-     lock <data> <time>
-     force <chest> <time>
- " *)
+let usage_msg = "timelock-utils [--lock --data <data> | --force --chest <chest>] --time <time>"
 
 let main _ =
   Arg.parse speclist anon usage_msg;
   match !lock_arg, !force_arg with
   | true, false  -> lock !data_arg !time_arg
   | false, true -> force !chest_arg !time_arg
-  | _ -> assert false
-
-    (* print_endline !value_arg;
-       print_endline !chest_arg;
-       print_endline (string_of_int !time_arg); *)
-    (* if (compare !value_arg "") <> 0 then begin lock !value_arg !time_arg end;
-    if (compare !chest_arg "") <> 0 then begin force !chest_arg !time_arg end *)
-(* TODO : check out to go from string to chest to force*)
+  | _ -> print_endline "Error: Unkwown command."
 
 let _ = main ()
