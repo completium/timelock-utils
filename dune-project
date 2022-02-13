@@ -20,5 +20,6 @@ Utils to generate chest and chest_key from packed data bytes
    (hex (>= 1.4.0))
    (tezos-hacl-glue (>= 11.1))
    (tezos-crypto (>= 11.1))
+   (yojson (>= 1.7.0))
   )
 )
