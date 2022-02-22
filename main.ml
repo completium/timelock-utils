@@ -9,6 +9,8 @@ let hex_to_bytes (input : string) : bytes = Hex.to_bytes (`Hex input)
 
 let print_bytes (b : bytes) : unit = print_endline (Hex.show (Hex.of_bytes b))
 
+let chest_key_to_bytes (ck : Timelock.chest_key) : bytes = Data_encoding.Binary.to_bytes_exn Timelock.chest_key_encoding ck
+
 let bytes_to_chest_key (b : bytes) : Timelock.chest_key = Data_encoding.Binary.of_bytes_exn Timelock.chest_key_encoding b
 
 let bytes_to_chest (b : bytes) : Timelock.chest = Data_encoding.Binary.of_bytes_exn Timelock.chest_encoding b
@@ -34,6 +36,11 @@ let lock pl time =
   in
   print_endline (pretty_to_string (print_json_chest_key chest_bytes chest_key_bytes))
 
+let create_chest_key bchest time =
+  let chest = decode_chest bchest in
+  let chest_key = Timelock.create_chest_key ~time chest in
+  chest_key |> chest_key_to_bytes |> print_bytes
+
 let force bchest time =
   let chest = decode_chest bchest in
   let chest_key = Timelock.create_chest_key ~time chest in
@@ -52,6 +59,7 @@ let open_ bkey bchest time =
 
 let lock_cmd  = ref false
 let force_cmd = ref false
+let cck_cmd   = ref false
 let open_cmd  = ref false
 
 let data_arg  = ref ""
@@ -66,6 +74,7 @@ let anon a =
 let speclist = Arg.align [
     "--lock",  Arg.Set lock_cmd, " Generates chest and chest_key values";
     "--force", Arg.Set force_cmd, " Forces chest";
+    "--create-chest-key", Arg.Set cck_cmd, " Create chest key from chest";
     "--open",  Arg.Set open_cmd, " Opens chest";
 
     "--data",  Arg.Set_string data_arg, " Sets data";
@@ -74,14 +83,15 @@ let speclist = Arg.align [
     "--time",  Arg.Set_int time_arg, " Number of iterations"
   ]
 
-let usage_msg = "timelock-utils [--lock --data <data> | --force --chest <chest> | --open --key <key> --chest <chest>] --time <time>"
+let usage_msg = "timelock-utils [--lock --data <data> | --force --chest <chest> | --create-chest-key --chest <chest> | --open --key <key> --chest <chest>] --time <time>"
 
 let main _ =
   Arg.parse speclist anon usage_msg;
-  match !lock_cmd, !force_cmd, !open_cmd  with
-  | true, false, false  -> lock  !data_arg !time_arg
-  | false, true, false  -> force !chest_arg !time_arg
-  | false, false, true  -> open_ !key_arg !chest_arg !time_arg
+  match !lock_cmd, !force_cmd, !cck_cmd, !open_cmd  with
+  | true, false, false,  false -> lock  !data_arg !time_arg
+  | false, true, false,  false -> force !chest_arg !time_arg
+  | false, false, true,  false -> create_chest_key !chest_arg !time_arg
+  | false, false, false, true  -> open_ !key_arg !chest_arg !time_arg
   | _ -> print_endline "Error: Unkwown command."
 
 let _ = main ()
