@@ -17,7 +17,7 @@ clean:
 	@dune clean
 
 _opam:
-	opam switch create . 4.12.0 --no-install
+	opam switch create . 4.14.1 --no-install
 	eval $$(opam env)
 
 build-deps: _opam

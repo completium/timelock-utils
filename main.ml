@@ -1,5 +1,4 @@
 open Tezos_crypto
-open Yojson.Basic.Util
 open Yojson.Basic
 
 let print_json_chest_key c k =
@@ -21,7 +20,7 @@ let decode_chest b = try b |> hex_to_bytes |> bytes_to_chest with | e -> print_s
 
 let lock pl time =
   let payload = hex_to_bytes pl in
-  let (chest, chest_key) = Timelock.create_chest_and_chest_key ~payload ~time in
+  let (chest, chest_key) = Timelock.create_chest_and_chest_key ~payload ~time () in
   let chest_key_bytes =
     chest_key
     |> Data_encoding.Binary.to_bytes_exn Timelock.chest_key_encoding
@@ -46,7 +45,6 @@ let force bchest time =
   let chest_key = Timelock.create_chest_key ~time chest in
   match Timelock.open_chest chest chest_key ~time with
   | Timelock.Correct v     -> print_bytes v
-  | Timelock.Bogus_cipher  -> print_endline "Error: Could not force chest : bogus cipher."
   | Timelock.Bogus_opening -> print_endline "Error: Could not force chest : bogus opening."
 
 let open_ bkey bchest time =
@@ -54,7 +52,6 @@ let open_ bkey bchest time =
   let chest = decode_chest bchest in
   match Timelock.open_chest chest chest_key ~time with
   | Timelock.Correct v     -> print_bytes v
-  | Timelock.Bogus_cipher  -> print_endline "Error: Could not open chest : bogus cipher."
   | Timelock.Bogus_opening -> print_endline "Error: Could not open chest : bogus opening."
 
 let lock_cmd  = ref false

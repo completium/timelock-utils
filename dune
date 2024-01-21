@@ -5,7 +5,7 @@
     (flags (:standard -rectypes -w -20))))
 
 (executable
-  (libraries yojson tezos-hacl-glue-unix tezos-hacl-glue tezos-crypto hex)
+  (libraries yojson octez-libs.crypto hex)
   (modules main)
   (public_name timelock-utils)
   (name     main))

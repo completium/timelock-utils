@@ -18,8 +18,7 @@ Utils to generate chest and chest_key from packed data bytes
  (depends
    (ocaml (>= 4.12.0))
    (hex (>= 1.4.0))
-   (tezos-hacl-glue (>= 11.1))
-   (tezos-crypto (>= 11.1))
+   (octez-libs (>= 18.1))
    (yojson (>= 1.7.0))
   )
 )
